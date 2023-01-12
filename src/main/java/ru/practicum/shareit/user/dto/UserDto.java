@@ -1,21 +1,20 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.user.dto;
 
-import jdk.jfr.BooleanFlag;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-public class ItemDto {
+public class UserDto {
+    @EqualsAndHashCode.Exclude
     private long id;
     @NotBlank(message = "Не должно быть пустым")
     private String name;
     @NotBlank(message = "Не должно быть пустым")
-    private String description;
-    @BooleanFlag
-    @NotNull(message = "Не должно быть пустым")
-    private Boolean available;
+    @Email(message = "Неверный формат Email")
+    private String email;
 }
