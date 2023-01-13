@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,8 +15,8 @@ import static java.lang.String.format;
 public class ItemRepositoryImpl implements ItemRepository {
 
     private int counterId = 0;
-    private Map<Long, List<Item>> items = new HashMap<>();
-    private Map<Long, Item> storage = new LinkedHashMap<>();
+    private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, Item> storage = new LinkedHashMap<>();
 
     @Override
     public Item save(Item item) {
