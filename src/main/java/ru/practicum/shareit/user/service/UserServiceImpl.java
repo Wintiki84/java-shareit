@@ -25,8 +25,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserRepository getUserRepository () {return userRepository;}
-
     @Override
     public List<UserDto> getAllUsers() {
         return userMapper.toListOfUserDto(userRepository.findAll());
@@ -75,7 +73,7 @@ public class UserServiceImpl implements UserService {
                 .map(User::getEmail)
                 .filter(email -> email.equals(userDto.getEmail()))
                 .findFirst().ifPresent(email -> {
-            throw new BadRequestException(format("пользователь с электронной почтой: %s уже существует", email));
-        });
+                    throw new BadRequestException(format("пользователь с электронной почтой: %s уже существует", email));
+                });
     }
 }
