@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ItemRepository {
 
-    Item save(long userId, Item item);
+    Item save(Item item);
 
     List<Item> findAllUserItems(long userId);
 

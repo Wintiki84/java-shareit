@@ -24,9 +24,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto save(long userId, ItemDto itemDto) {
-        userRepository.findById(userId);
-        Item item = itemRepository.save(userId, itemMapper.toItem(itemDto));
-        return itemMapper.toItemDto(item);
+        Item item = itemMapper.toItem(itemDto);
+        item.setOwner(userRepository.findById(userId));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override

@@ -16,16 +16,13 @@ import static java.lang.String.format;
 public class ItemRepositoryImpl implements ItemRepository {
 
     private int counterId = 0;
-    private final UserRepository userRepository;
     private Map<Long, List<Item>> items = new HashMap<>();
     private Map<Long, Item> storage = new LinkedHashMap<>();
 
     @Override
-    public Item save(long userId, Item item) {
+    public Item save(Item item) {
         item.setId(getId());
-        item.setOwner(userRepository.findById(userId));
-
-        items.compute(userId, (id, list) -> {
+        items.compute(item.getOwner().getId(), (id, list) -> {
             if (list == null) {
                 list = new ArrayList<>();
             }
@@ -45,11 +42,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item update(long itemId, long userId, Item item) {
         item.setId(itemId);
-        item.setOwner(userRepository.findById(userId));
-
         items.get(userId).removeIf(i -> i.getId() == itemId);
         items.get(userId).add(item);
-
         storage.put(itemId, item);
         return item;
     }
