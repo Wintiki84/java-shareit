@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,13 @@ import static java.lang.String.format;
 @Validated
 @RequiredArgsConstructor
 @Service
+@Getter
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    public UserRepository getUserRepository () {return userRepository;}
 
     @Override
     public List<UserDto> getAllUsers() {

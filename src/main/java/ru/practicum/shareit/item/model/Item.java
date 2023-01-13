@@ -1,16 +1,15 @@
 package ru.practicum.shareit.item.model;
 
 import jdk.jfr.BooleanFlag;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 
-@Data
 @Builder
+@Getter
+@Setter
 public class Item {
     @EqualsAndHashCode.Exclude
     private long id;
@@ -21,6 +20,6 @@ public class Item {
     @BooleanFlag
     @NotBlank
     private Boolean available;
-    private UserDto owner;
+    private User owner;
     private ItemRequest request;
 }

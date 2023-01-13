@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,14 +16,14 @@ import static java.lang.String.format;
 public class ItemRepositoryImpl implements ItemRepository {
 
     private int counterId = 0;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private Map<Long, List<Item>> items = new HashMap<>();
     private Map<Long, Item> storage = new LinkedHashMap<>();
 
     @Override
     public Item save(long userId, Item item) {
         item.setId(getId());
-        item.setOwner(userService.getById(userId));
+        item.setOwner(userRepository.findById(userId));
 
         items.compute(userId, (id, list) -> {
             if (list == null) {
@@ -45,7 +45,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item update(long itemId, long userId, Item item) {
         item.setId(itemId);
-        item.setOwner(userService.getById(userId));
+        item.setOwner(userRepository.findById(userId));
 
         items.get(userId).removeIf(i -> i.getId() == itemId);
         items.get(userId).add(item);

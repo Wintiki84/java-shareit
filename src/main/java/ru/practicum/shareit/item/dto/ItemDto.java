@@ -3,12 +3,15 @@ package ru.practicum.shareit.item.dto;
 import jdk.jfr.BooleanFlag;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data
 @Builder
+@Getter
+@Setter
 public class ItemDto {
     private long id;
     @NotBlank(message = "Не должно быть пустым")

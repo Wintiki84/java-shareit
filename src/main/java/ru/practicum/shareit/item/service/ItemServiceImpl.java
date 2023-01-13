@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,20 +18,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
 
     @Override
     public ItemDto save(long userId, ItemDto itemDto) {
-        userService.getById(userId);
+        userRepository.findById(userId);
         Item item = itemRepository.save(userId, itemMapper.toItem(itemDto));
         return itemMapper.toItemDto(item);
     }
 
     @Override
     public List<ItemDto> getAllUserItems(long userId) {
-        userService.getById(userId);
+        userRepository.findById(userId);
         return itemMapper.toListOfItemDto(itemRepository.findAllUserItems(userId));
     }
 
@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto update(long itemId, long userId, ItemDto itemDto) {
         Item item = itemRepository.findById(itemId);
 
-        if (!item.getOwner().equals(userService.getById(userId))) {
+        if (!item.getOwner().equals(userRepository.findById(userId))) {
             throw new NotFoundException(String.format("предмет с идентификатором: %d" +
                     " не принадлежит пользователю с идентификатором: %d", itemId, userId));
         }
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(long itemId, long userId) {
-        userService.getById(userId);
+        userRepository.findById(userId);
 
         Item item = itemRepository.findById(itemId);
 
@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> search(long userId, String text) {
-        userService.getById(userId);
+        userRepository.findById(userId);
 
         return itemMapper.toListOfItemDto(itemRepository.search(text));
     }
