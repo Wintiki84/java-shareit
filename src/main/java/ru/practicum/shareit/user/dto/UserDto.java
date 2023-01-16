@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 public class UserDto {
     @EqualsAndHashCode.Exclude
-    private long id;
+    private Long id;
     @NotBlank(message = "Не должно быть пустым")
     private String name;
     @NotBlank(message = "Не должно быть пустым")
