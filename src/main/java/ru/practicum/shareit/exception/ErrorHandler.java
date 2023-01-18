@@ -15,6 +15,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class ErrorHandler {
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> bookingException(final BookingException e) {
+        log.info(e.getMessage(), e);
+        return Map.of("error", e.getMessage());
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> validExceptionHandler(Exception e) {

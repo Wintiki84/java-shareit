@@ -14,11 +14,11 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("select b " +
-            "from Booking b left join User as us on b.booker.id = us.id " +
-            "where us.id = :userId " +
-            "and :time between b.start and b.end ")
-    List<Booking> findByBookerIdAndCurrent(Long userId, LocalDateTime time, Sort sort);
+    List<Booking> findByBookerIdAndEndIsAfterAndStartIsBefore(
+            Long userId,
+            LocalDateTime timeEnd,
+            LocalDateTime timeStart,
+            Sort sort);
 
     List<Booking> findByBookerIdAndEndIsBefore(Long userId, LocalDateTime time, Sort sort);
 
@@ -30,12 +30,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemOwnerId(Long id, Sort sort);
 
-    @Query("select b " +
-            "from Booking b left join Item as i on b.item.id = i.id " +
-            "left join User as us on i.owner.id = us.id " +
-            "where us.id = :userId " +
-            "and :time between b.start and b.end ")
-    List<Booking> findByItemOwnerIdAndCurrent(Long userId, LocalDateTime time, Sort sort);
+    List<Booking> findByItemOwnerIdAndEndIsAfterAndStartIsBefore(
+            Long userId,
+            LocalDateTime timeEnd,
+            LocalDateTime timeStart,
+            Sort sort);
 
     List<Booking> findByItemOwnerIdAndEndIsBefore(Long userId, LocalDateTime time, Sort sort);
 
@@ -46,14 +45,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByBookerIdAndItemIdAndEndIsBefore(Long id, Long itemId, LocalDateTime time);
 
     @Query("SELECT b FROM  Booking b " +
-            "WHERE b.item.id = :itemId AND b.item.owner.id = :userId AND b.status = 'APPROVED' AND b.end < :now " +
+            "WHERE b.item.id = :itemId AND b.item.owner.id = :userId AND b.status = 'APPROVED' AND b.end < :time " +
             "ORDER BY b.start DESC")
-    Booking findLastBooking(LocalDateTime now, Long userId, Long itemId);
+    Booking findLastBooking(LocalDateTime time, Long userId, Long itemId);
 
     @Query("SELECT b FROM  Booking b " +
-            "WHERE b.item.id = :itemId AND b.item.owner.id = :userId AND b.status = 'APPROVED' AND b.start > :now " +
+            "WHERE b.item.id = :itemId AND b.item.owner.id = :userId AND b.status = 'APPROVED' AND b.start > :time " +
             "ORDER BY b.start")
-    Booking findNextBooking(LocalDateTime now, Long userId, Long itemId);
+    Booking findNextBooking(LocalDateTime time, Long userId, Long itemId);
 
     List<Booking> findAllByItemInAndStatus(List<Item> items, Status status, Sort sort);
 }

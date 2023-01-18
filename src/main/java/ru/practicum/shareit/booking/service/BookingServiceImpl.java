@@ -5,24 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
-import ru.practicum.shareit.booking.dto.BookingDtoResponse;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.stream.Collectors;
-
-import static ru.practicum.shareit.booking.mapper.BookingMapper.toBookingDtoResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -35,213 +33,214 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDtoResponse> findAllByState(Long userId, String stateText) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User ID %s doesn't exist.", userId)));
+    public List<BookingDto> findAllByState(Long userId, String stateText) {
+        if (Status.from(stateText) == null) {
+            throw new IllegalArgumentException("Unknown state: " + stateText);
+        }
+        findByUserId(userId);
 
         switch (Status.valueOf(stateText)) {
             case CURRENT:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText {}", userId, stateText);
                 return bookingRepository
-                        .findByBookerIdAndCurrent(
+                        .findByBookerIdAndEndIsAfterAndStartIsBefore(
                                 userId,
+                                LocalDateTime.now(),
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText {}", userId, stateText);
                 return bookingRepository
                         .findByBookerIdAndEndIsBefore(
                                 userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText {}", userId, stateText);
                 return bookingRepository
                         .findByBookerIdAndStartIsAfter(
                                 userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText {}", userId, stateText);
                 return bookingRepository
                         .findByBookerIdAndStatus(
                                 userId,
                                 Status.WAITING,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case REJECTED:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText {}", userId, stateText);
                 return bookingRepository
                         .findByBookerIdAndStatus(
                                 userId,
                                 Status.REJECTED,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                log.info("BookingService: findAllByState implementation. User ID {}, stateText by default.", userId);
                 return bookingRepository
                         .findByBookerId(
                                 userId,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDtoResponse> findAllByOwnerIdAndState(Long userId, String stateText) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User ID %s doesn't exist.", userId)));
-        List<BookingDtoResponse> bookings = bookingRepository.findByItemOwnerId(
+    public List<BookingDto> findAllByOwnerIdAndState(Long userId, String stateText) {
+        if (Status.from(stateText) == null) {
+            throw new IllegalArgumentException("Unknown state: " + stateText);
+        }
+        findByUserId(userId);
+        List<BookingDto> bookings = bookingRepository.findByItemOwnerId(
                         userId,
                         Sort.by(Sort.Direction.DESC, "start"))
                 .stream()
-                .map(BookingMapper::toBookingDtoResponse)
+                .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
 
         if (bookings.isEmpty()) {
-            throw new NotFoundException(String.format("User ID %s doesn't have items.", userId));
+            throw new NotFoundException(String.format("Бронирований для пользователя ID %s не найдено", userId));
         }
 
         switch (Status.valueOf(stateText)) {
             case CURRENT:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText {}.",
-                        userId, stateText);
                 return bookingRepository
-                        .findByItemOwnerIdAndCurrent(
+                        .findByItemOwnerIdAndEndIsAfterAndStartIsBefore(
                                 userId,
+                                LocalDateTime.now(),
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText {}.",
-                        userId, stateText);
                 return bookingRepository
                         .findByItemOwnerIdAndEndIsBefore(
                                 userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText {}.",
-                        userId, stateText);
                 return bookingRepository
                         .findByItemOwnerIdAndStartIsAfter(
                                 userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText {}.",
-                        userId, stateText);
                 return bookingRepository
                         .findByItemOwnerIdAndStatus(
                                 userId,
                                 Status.WAITING,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case REJECTED:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText {}.",
-                        userId, stateText);
                 return bookingRepository
                         .findByItemOwnerIdAndStatus(
                                 userId,
                                 Status.REJECTED,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookingMapper::toBookingDtoResponse)
+                        .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                log.info("BookingService: findAllByOwnerIdAndState implementation. User ID {}, stateText by default.",
-                        userId);
                 return bookings;
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BookingDtoResponse findById(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Booking ID %s doesn't exist.", bookingId)));
+    public BookingDto findById(Long userId, Long bookingId) {
+        Booking booking = findByBookingId(bookingId);
         if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId)) {
-            throw new NotFoundException(String.format("User ID %s didn't create booking ID %s.", userId, bookingId));
+            throw new NotFoundException(String.format("Пользователь ID %s не создовал бронирование ID %s.",
+                    userId, bookingId));
         }
-        log.info("BookingService: findById implementation. User ID {}, booking ID {}.", userId, bookingId);
-        return toBookingDtoResponse(booking);
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     @Transactional
-    public BookingDtoResponse save(Long userId, BookingDtoRequest bookingDtoRequest) {
-        Booking booking = BookingMapper.toBooking(bookingDtoRequest);
-        booking.setBooker(userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User ID %s doesn't exist.", userId))));
-        Item item = itemRepository.findById(bookingDtoRequest.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Item ID %s doesn't exist.",
-                        bookingDtoRequest.getItemId())));
+    public BookingDto save(Long userId, BookingDto bookingDto) throws MissingResourceException {
+        if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
+            throw new BookingException("Некорректное время бронирования");
+        }
 
-        if (item.getOwner().getId().equals(userId)) {
-            throw new NotFoundException("Owner can't book his item.");
+        Booking booking = BookingMapper.toBooking(bookingDto);
+        booking.setBooker(findByUserId(userId));
+        booking.setItem(findByItemId(bookingDto.getItemId()));
+
+        if (booking.getItem().getOwner().getId().equals(userId)) {
+            throw new NotFoundException("Владелец не может забронировать свой товар.");
         }
-        if (!item.getAvailable()) {
-            throw new ValidationException(String.format("Item ID %s isn't available.", item.getId()));
+        if (!booking.getItem().getAvailable()) {
+            throw new BookingException(String.format("Предмет ID %s недоступен", booking.getItem().getId()));
         }
-        booking.setItem(item);
+        booking.setItem(booking.getItem());
         Booking bookingSave = bookingRepository.save(booking);
-        log.info("BookingServer: save implementation. User ID {}, booking ID {}.", userId, bookingSave.getId());
-        return toBookingDtoResponse(bookingSave);
+        return BookingMapper.toBookingDto(bookingSave);
     }
 
     @Override
     @Transactional
-    public BookingDtoResponse updateState(Long userId, Long bookingId, Boolean approved) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Booking ID %s doesn't exist.", bookingId)));
+    public BookingDto updateState(Long userId, Long bookingId, Boolean approved) {
+        if (approved == null) {
+            throw new BookingException("Некорректный статус поддтверждения бронирования");
+        }
+        Booking booking = findByBookingId(bookingId);
 
         if (!userId.equals(booking.getItem().getOwner().getId())) {
-            throw new NotFoundException("Only owner can approve bookings.");
+            throw new NotFoundException("Только владелец может одобрить бронирование");
         }
         if (booking.getStatus().equals(Status.APPROVED)) {
-            throw new BookingException("Booking is already approved.");
+            throw new BookingException("Бронирование уже одобрено");
         }
         if (approved) {
             booking.setStatus(Status.APPROVED);
         } else {
             booking.setStatus(Status.REJECTED);
         }
-        log.info("BookingService: updateState implementation. User ID {}, booking ID {}.", userId, bookingId);
-        return toBookingDtoResponse(booking);
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override
     @Transactional
     public void delete(Long bookingId) {
-        bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(String.format("Booking ID %s doesn't exist.", bookingId)));
-        log.info("BookingService: delete implementation. Booking ID {}.", bookingId);
+        findByBookingId(bookingId);
         bookingRepository.deleteById(bookingId);
+    }
+
+    private User findByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
+    }
+
+    private Booking findByBookingId(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Бронирование ID %s не найдено", bookingId)));
+    }
+
+    private Item findByItemId(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Предмет ID %s не найден", itemId)));
     }
 }

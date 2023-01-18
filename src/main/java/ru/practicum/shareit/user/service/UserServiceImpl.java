@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
-        log.info("UserService: findAll implementation.");
         return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toUserDto)
@@ -34,8 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserDto getById(Long userId) {
-        return UserMapper.toUserDto(userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId))));
+        return UserMapper.toUserDto(findByUserId(userId));
     }
 
     @Override
@@ -48,8 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto update(Long userId, UserDto userDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
+        User user = findByUserId(userId);
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
         }
@@ -62,8 +59,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
+        findByUserId(userId);
         userRepository.deleteById(userId);
+    }
+
+    private User findByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
     }
 }
