@@ -46,7 +46,6 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(user);
         Item itemSave = itemRepository.save(item);
         return ItemMapper.toItemDto(itemSave);
-
     }
 
     @Override
