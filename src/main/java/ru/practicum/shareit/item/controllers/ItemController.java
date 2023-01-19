@@ -3,11 +3,11 @@ package ru.practicum.shareit.item.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -49,11 +49,16 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") long userId,
                                 @RequestParam String text) {
-        log.info("Запрос на получение предмета: {} от пользователя c id: {}",text, userId);
-        if (text.isBlank()) {
-            return Collections.emptyList();
-        }
-
+        log.info("Запрос на получение предмета: {} от пользователя c id: {}", text, userId);
         return itemService.search(userId, text);
+    }
+
+    @PostMapping(value = "/{itemId}/comment")
+    public CommentDto saveComment(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @PathVariable long itemId,
+            @Valid @RequestBody CommentDto commentDto) {
+        log.info("Запрос на создание комментария к предмету c id: {}, от пользователя c id: {}", itemId, userId);
+        return itemService.saveComment(userId, itemId, commentDto);
     }
 }
