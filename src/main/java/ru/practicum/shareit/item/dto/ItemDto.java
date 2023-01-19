@@ -23,8 +23,8 @@ import java.util.List;
 public class ItemDto {
 
     @JsonView({Details.class, AdminDetails.class})
-    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
-    @Min(value = 0, message = "Должно быть больше нуля")
+    @Null(groups = {Create.class}, message = "Должно быть пустым")
+    @Min(groups = {Update.class}, value = 0, message = "Должно быть больше нуля")
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})
