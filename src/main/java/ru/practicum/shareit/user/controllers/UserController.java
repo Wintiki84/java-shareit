@@ -57,8 +57,9 @@ public class UserController {
 
     @JsonView(Details.class)
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable long id) {
         log.info("Запрос на удаление пользователя c id: {}", id);
         userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

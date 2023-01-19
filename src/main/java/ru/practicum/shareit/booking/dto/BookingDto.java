@@ -39,17 +39,25 @@ public class BookingDto {
     @Min(value = 0, message = "Должно быть больше нуля")
     private Long itemId;
 
+    @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private Item item;
 
+    @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private Booker booker;
 
+    @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private Status status;
 
     @Getter
     @Setter
     @Builder
     public static class Item {
+        @JsonView({Details.class, AdminDetails.class})
         private final long id;
+        @JsonView({Details.class, AdminDetails.class})
         private final String name;
     }
 
@@ -57,7 +65,9 @@ public class BookingDto {
     @Setter
     @Builder
     public static class Booker {
+        @JsonView({Details.class, AdminDetails.class})
         private final long id;
+        @JsonView({Details.class, AdminDetails.class})
         private final String name;
     }
 }

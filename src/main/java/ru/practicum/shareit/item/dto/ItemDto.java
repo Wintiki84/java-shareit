@@ -43,28 +43,36 @@ public class ItemDto {
     private Boolean available;
 
     @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private ItemOwner owner;
 
     @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private ItemBooking lastBooking;
 
     @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private ItemBooking nextBooking;
 
     @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private List<CommentDto> comments;
 
     @Builder
     @Getter
     @Setter
     public static class ItemOwner {
+        @JsonView({Details.class, AdminDetails.class})
         private final long id;
+        @JsonView({Details.class, AdminDetails.class})
         private final String name;
     }
 
     @Data
     public static class ItemBooking {
+        @JsonView({Details.class, AdminDetails.class})
         private final long id;
+        @JsonView({Details.class, AdminDetails.class})
         private final long bookerId;
     }
 }

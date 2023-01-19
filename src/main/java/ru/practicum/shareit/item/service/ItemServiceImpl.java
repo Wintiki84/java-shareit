@@ -21,6 +21,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,6 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -39,8 +39,9 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    @NotNull
     @Transactional
-    public ItemDto save(Long userId, ItemDto itemDto) {
+    public ItemDto save(@NotNull Long userId, @NotNull ItemDto itemDto) {
         User user = findByUserId(userId);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
@@ -48,9 +49,10 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemSave);
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getAllUserItems(Long userId) {
+    public List<ItemDto> getAllUserItems(@NotNull Long userId) {
         findByUserId(userId);
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         Map<Item, List<Comment>> commentsAll = commentRepository.findAllByItemIn(
@@ -104,9 +106,10 @@ public class ItemServiceImpl implements ItemService {
         return itemsDto;
     }
 
+    @NotNull
     @Override
     @Transactional
-    public ItemDto update(Long itemId, Long userId, ItemDto itemDto) {
+    public ItemDto update(@NotNull Long itemId, @NotNull Long userId, @NotNull ItemDto itemDto) {
         findByUserId(userId);
         Item item = findByItemId(itemId);
         if (!item.getOwner().equals(userRepository.findById(userId).get())) {
@@ -126,9 +129,10 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(item);
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public ItemDto getById(Long itemId, Long userId) {
+    public ItemDto getById(@NotNull Long itemId, @NotNull Long userId) {
         findByUserId(userId);
         Item item = findByItemId(itemId);
         ItemDto itemDto = ItemMapper.toItemDto(item);
@@ -152,8 +156,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    @NotNull
     @Override
-    public List<ItemDto> search(long userId, String text) {
+    public List<ItemDto> search(@NotNull Long userId, @NotNull String text) {
         findByUserId(userId);
         if (text.isBlank()) {
             return Collections.emptyList();
@@ -165,9 +170,10 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @NotNull
     @Override
     @Transactional
-    public CommentDto saveComment(Long userId, Long itemId, CommentDto commentDto) {
+    public CommentDto saveComment(@NotNull Long userId, @NotNull Long itemId, @NotNull CommentDto commentDto) {
         User user = findByUserId(userId);
         Item item = findByItemId(itemId);
 
@@ -188,12 +194,14 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toCommentDto(commentSaveRepository);
     }
 
-    private User findByUserId(Long userId) {
+    @NotNull
+    private User findByUserId(@NotNull Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
     }
 
-    private Item findByItemId(Long itemId) {
+    @NotNull
+    private Item findByItemId(@NotNull Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Предмет ID %s не найден", itemId)));
     }

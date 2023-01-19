@@ -3,19 +3,26 @@ package ru.practicum.shareit.item.service;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface ItemService {
 
-    ItemDto save(Long userId, ItemDto itemDto);
+    @NotNull
+    ItemDto save(@NotNull Long userId, @NotNull ItemDto itemDto);
 
-    List<ItemDto> getAllUserItems(Long userId);
+    @NotNull
+    List<ItemDto> getAllUserItems(@NotNull Long userId);
 
-    ItemDto update(Long itemId, Long userId, ItemDto itemDto);
+    @NotNull
+    ItemDto update(@NotNull Long itemId, @NotNull Long userId, @NotNull ItemDto itemDto);
 
-    ItemDto getById(Long itemId, Long userId);
+    @NotNull
+    ItemDto getById(@NotNull Long itemId, @NotNull Long userId);
 
-    List<ItemDto> search(long userId, String text);
+    @NotNull
+    List<ItemDto> search(@NotNull Long userId, @NotNull String text);
 
-    CommentDto saveComment(Long userId, Long itemId, CommentDto commentDto);
+    @NotNull
+    CommentDto saveComment(@NotNull Long userId, @NotNull Long itemId, @NotNull CommentDto commentDto);
 }

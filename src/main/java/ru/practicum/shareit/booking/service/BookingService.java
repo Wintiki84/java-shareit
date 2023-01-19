@@ -2,20 +2,26 @@ package ru.practicum.shareit.booking.service;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.MissingResourceException;
 
 public interface BookingService {
 
-    List<BookingDto> findAllByState(Long userId, String stateText);
+    @NotNull
+    List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText);
 
-    List<BookingDto> findAllByOwnerIdAndState(Long userId, String stateText);
+    @NotNull
+    List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String stateText);
 
-    BookingDto findById(Long userId, Long bookingId);
+    @NotNull
+    BookingDto findById(@NotNull Long userId, @NotNull Long bookingId);
 
-    BookingDto save(Long userId, BookingDto bookingDto) throws MissingResourceException;
+    @NotNull
+    BookingDto save(@NotNull Long userId, @NotNull BookingDto bookingDto) throws MissingResourceException;
 
-    BookingDto updateState(Long userId, Long bookingId, Boolean approved);
+    @NotNull
+    BookingDto updateState(@NotNull Long userId, @NotNull Long bookingId, @NotNull Boolean approved);
 
-    void delete(Long bookingId);
+    void delete(@NotNull Long bookingId);
 }

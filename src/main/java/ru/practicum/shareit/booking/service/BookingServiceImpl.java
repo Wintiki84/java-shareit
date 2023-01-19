@@ -17,24 +17,28 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> findAllByState(Long userId, String stateText) {
+    public List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText) {
         if (Status.from(stateText) == null) {
+            log.info("BookingServiceImpl.findAllByState: Неизвестное состояние" + stateText);
+            //С сообщением об ошибке на русском не проходит тесты
             throw new IllegalArgumentException("Unknown state: " + stateText);
         }
         findByUserId(userId);
@@ -97,10 +101,13 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> findAllByOwnerIdAndState(Long userId, String stateText) {
+    public List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String stateText) {
         if (Status.from(stateText) == null) {
+            log.info("BookingServiceImpl.findAllByOwnerIdAndState: Неизвестное состояние" + stateText);
+            //С сообщением об ошибке на русском не проходит тесты
             throw new IllegalArgumentException("Unknown state: " + stateText);
         }
         findByUserId(userId);
@@ -167,9 +174,10 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @NotNull
     @Override
     @Transactional(readOnly = true)
-    public BookingDto findById(Long userId, Long bookingId) {
+    public BookingDto findById(@NotNull Long userId, @NotNull Long bookingId) {
         Booking booking = findByBookingId(bookingId);
         if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId)) {
             throw new NotFoundException(String.format("Пользователь ID %s не создовал бронирование ID %s.",
@@ -178,11 +186,13 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingDto(booking);
     }
 
+    @NotNull
     @Override
     @Transactional
-    public BookingDto save(Long userId, BookingDto bookingDto) throws MissingResourceException {
+    public BookingDto save(@NotNull Long userId, @NotNull BookingDto bookingDto) throws MissingResourceException {
         if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
-            throw new BookingException("Некорректное время бронирования");
+            throw new BookingException("BookingService.save: Некорректное время бронирования: окончание бронирования " +
+                    bookingDto.getEnd().toString() + " позже начала " + bookingDto.getStart().toString());
         }
 
         Booking booking = BookingMapper.toBooking(bookingDto);
@@ -190,7 +200,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(findByItemId(bookingDto.getItemId()));
 
         if (booking.getItem().getOwner().getId().equals(userId)) {
-            throw new NotFoundException("Владелец не может забронировать свой товар.");
+            throw new NotFoundException(String.format("Владелец ID %s не может забронировать свой товар", userId));
         }
         if (!booking.getItem().getAvailable()) {
             throw new BookingException(String.format("Предмет ID %s недоступен", booking.getItem().getId()));
@@ -200,16 +210,18 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingDto(bookingSave);
     }
 
+    @NotNull
     @Override
     @Transactional
-    public BookingDto updateState(Long userId, Long bookingId, Boolean approved) {
+    public BookingDto updateState(@NotNull Long userId, @NotNull Long bookingId, @NotNull Boolean approved) {
         if (approved == null) {
-            throw new BookingException("Некорректный статус поддтверждения бронирования");
+            throw new BookingException("Некорректный статус NULL поддтверждения бронирования");
         }
         Booking booking = findByBookingId(bookingId);
 
         if (!userId.equals(booking.getItem().getOwner().getId())) {
-            throw new NotFoundException("Только владелец может одобрить бронирование");
+            throw new NotFoundException(String.format("Только владелец ID %s может одобрить бронирование",
+                    booking.getItem().getOwner().getId()));
         }
         if (booking.getStatus().equals(Status.APPROVED)) {
             throw new BookingException("Бронирование уже одобрено");
@@ -224,22 +236,25 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public void delete(Long bookingId) {
+    public void delete(@NotNull Long bookingId) {
         findByBookingId(bookingId);
         bookingRepository.deleteById(bookingId);
     }
 
-    private User findByUserId(Long userId) {
+    @NotNull
+    private User findByUserId(@NotNull Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь ID %s не найден", userId)));
     }
 
-    private Booking findByBookingId(Long bookingId) {
+    @NotNull
+    private Booking findByBookingId(@NotNull Long bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Бронирование ID %s не найдено", bookingId)));
     }
 
-    private Item findByItemId(Long itemId) {
+    @NotNull
+    private Item findByItemId(@NotNull Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Предмет ID %s не найден", itemId)));
     }

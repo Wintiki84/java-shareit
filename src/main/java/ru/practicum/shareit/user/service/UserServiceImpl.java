@@ -59,7 +59,6 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDto(user);
     }
 
-    @NotNull
     @Override
     @Transactional
     public void delete(@NotNull Long userId) {

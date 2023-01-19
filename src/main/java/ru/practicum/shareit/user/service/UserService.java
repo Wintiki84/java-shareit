@@ -19,6 +19,5 @@ public interface UserService {
     @NotNull
     UserDto update(@NotNull Long id, @NotNull UserDto userDto);
 
-    @NotNull
     void delete(@NotNull Long id);
 }
