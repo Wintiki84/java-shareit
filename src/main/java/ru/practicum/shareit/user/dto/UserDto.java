@@ -1,22 +1,34 @@
 package ru.practicum.shareit.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.validator.AdminDetails;
+import ru.practicum.shareit.validator.Create;
+import ru.practicum.shareit.validator.Details;
+import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
 @Builder
 @Getter
 @Setter
 public class UserDto {
-    @EqualsAndHashCode.Exclude
+
+    @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
+    @Min(value = 0, message = "Должно быть больше нуля")
     private Long id;
-    @NotBlank(message = "Не должно быть пустым")
+
+    @JsonView({Details.class, AdminDetails.class})
+    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
+    @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     private String name;
-    @NotBlank(message = "Не должно быть пустым")
-    @Email(message = "Неверный формат Email")
+
+    @JsonView({Details.class, AdminDetails.class})
+    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
+    @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
+    @Email(groups = {Create.class, Update.class}, message = "Неверный формат Email")
     private String email;
 }

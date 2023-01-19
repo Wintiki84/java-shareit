@@ -1,49 +1,61 @@
 package ru.practicum.shareit.user.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.validator.Create;
+import ru.practicum.shareit.validator.Details;
+import ru.practicum.shareit.validator.Update;
 
-import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    public UserDto save(@Valid @RequestBody UserDto userDto) {
+    @JsonView(Details.class)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDto> save(@Validated(Create.class) @RequestBody UserDto userDto) {
         log.info("Запрос создания пользователя");
-        return userService.save(userDto);
+        return new ResponseEntity<>(userService.save(userDto), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public UserDto update(@Valid @PathVariable long id,
-                          @RequestBody UserDto userDto) {
+    @JsonView(Details.class)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDto> update(@PathVariable("id") @Min(0) long id,
+                                          @Validated(Update.class) @RequestBody UserDto userDto) {
         log.info("Запрос обновления пользователя c id: {}", id);
-        return userService.update(id, userDto);
+        return new ResponseEntity<>(userService.update(id, userDto), HttpStatus.OK);
     }
 
+    @JsonView(Details.class)
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable long id) {
+    public ResponseEntity<UserDto> getById(@PathVariable("id") @Min(0) long id) {
         log.info("Запрос на получение пользователя c id: {}", id);
-        return userService.getById(id);
+        return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
+    @JsonView(Details.class)
     @GetMapping
-    public List<UserDto> getAll() {
+    public ResponseEntity<List<UserDto>> getAll() {
         log.info("Запрос на получение всех пользователей");
-        return userService.getAllUsers();
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @JsonView(Details.class)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
         log.info("Запрос на удаление пользователя c id: {}", id);

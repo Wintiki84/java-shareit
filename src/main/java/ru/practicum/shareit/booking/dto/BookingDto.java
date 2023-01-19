@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.validator.AdminDetails;
 import ru.practicum.shareit.validator.Create;
+import ru.practicum.shareit.validator.Details;
+import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,18 +18,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class BookingDto {
-    @EqualsAndHashCode.Exclude
+
+    @JsonView({Details.class, AdminDetails.class})
+    @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
+    @Min(value = 0, message = "Должно быть больше нуля")
     private Long id;
 
+    @JsonView({Details.class, AdminDetails.class})
     @NotNull(groups = {Create.class})
     @FutureOrPresent(groups = {Create.class})
     private LocalDateTime start;
 
+    @JsonView({Details.class, AdminDetails.class})
     @NotNull(groups = {Create.class})
     @Future(groups = {Create.class})
     private LocalDateTime end;
 
-    @NotNull
+    @JsonView({Details.class, AdminDetails.class})
+    @NotNull(groups = {Create.class})
+    @Min(value = 0, message = "Должно быть больше нуля")
     private Long itemId;
 
     private Item item;
