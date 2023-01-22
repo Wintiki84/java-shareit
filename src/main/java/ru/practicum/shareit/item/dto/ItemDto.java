@@ -11,10 +11,10 @@ import ru.practicum.shareit.validator.Create;
 import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Builder
@@ -24,7 +24,7 @@ public class ItemDto {
 
     @JsonView({Details.class, AdminDetails.class})
     @Null(groups = {Create.class}, message = "Должно быть пустым")
-    @Min(groups = {Update.class}, value = 0, message = "Должно быть больше нуля")
+    @Positive(groups = {Update.class}, message = "Должно быть больше нуля")
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})
@@ -57,6 +57,9 @@ public class ItemDto {
     @JsonView({Details.class, AdminDetails.class})
     @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
     private List<CommentDto> comments;
+
+    @JsonView({Details.class, AdminDetails.class})
+    private Long requestId;
 
     @Builder
     @Getter

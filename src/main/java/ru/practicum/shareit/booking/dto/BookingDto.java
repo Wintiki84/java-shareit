@@ -21,7 +21,7 @@ public class BookingDto {
 
     @JsonView({Details.class, AdminDetails.class})
     @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
-    @Min(value = 0, message = "Должно быть больше нуля")
+    @Positive(message = "Должно быть больше нуля")
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})

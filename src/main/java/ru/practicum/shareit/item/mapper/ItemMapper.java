@@ -23,6 +23,7 @@ public class ItemMapper {
                 .lastBooking(null)
                 .nextBooking(null)
                 .comments(new ArrayList<>())
+                .requestId(item.getRequest() == null ? null : item.getRequest().getId())
                 .build();
     }
 

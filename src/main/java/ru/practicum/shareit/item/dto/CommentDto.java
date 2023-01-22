@@ -9,10 +9,10 @@ import ru.practicum.shareit.validator.Create;
 import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,7 +22,7 @@ public class CommentDto {
 
     @JsonView({Details.class, AdminDetails.class})
     @Null(groups = {Create.class, Update.class}, message = "Должно быть пустым")
-    @Min(value = 0, message = "Должно быть больше нуля")
+    @Positive(message = "Должно быть больше нуля")
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})

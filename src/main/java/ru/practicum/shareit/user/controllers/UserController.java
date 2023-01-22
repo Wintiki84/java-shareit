@@ -14,7 +14,7 @@ import ru.practicum.shareit.validator.Create;
 import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +35,7 @@ public class UserController {
 
     @JsonView(Details.class)
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> update(@PathVariable("id") @Min(0) long id,
+    public ResponseEntity<UserDto> update(@PathVariable("id") @Positive long id,
                                           @Validated(Update.class) @RequestBody UserDto userDto) {
         log.info("Запрос обновления пользователя c id: {}", id);
         return new ResponseEntity<>(userService.update(id, userDto), HttpStatus.OK);
@@ -43,7 +43,7 @@ public class UserController {
 
     @JsonView(Details.class)
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable("id") @Min(0) long id) {
+    public ResponseEntity<UserDto> getById(@PathVariable("id") @Positive long id) {
         log.info("Запрос на получение пользователя c id: {}", id);
         return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
@@ -57,7 +57,7 @@ public class UserController {
 
     @JsonView(Details.class)
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable long id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable @Positive long id) {
         log.info("Запрос на удаление пользователя c id: {}", id);
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);

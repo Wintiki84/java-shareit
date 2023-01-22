@@ -13,8 +13,8 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.validator.Create;
 import ru.practicum.shareit.validator.Details;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class BookingController {
     @JsonView(Details.class)
     @GetMapping
     public ResponseEntity<List<BookingDto>> findAllByState(
-            @RequestHeader("X-Sharer-User-Id") @Min(0) Long userId,
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
             @RequestParam(name = "state", defaultValue = "ALL") String state) {
         log.info("Запрос предметов по состоянию бронирования. User ID {}, state {}.", userId, state);
         return new ResponseEntity<>(bookingService.findAllByState(userId, state), HttpStatus.OK);
@@ -38,7 +38,7 @@ public class BookingController {
     @JsonView(Details.class)
     @GetMapping(value = "/owner")
     public ResponseEntity<List<BookingDto>> findAllByOwnerIdAndState(
-            @RequestHeader("X-Sharer-User-Id") @Min(0) Long userId,
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
             @RequestParam(name = "state", defaultValue = "ALL") String stateText) {
         log.info("Запрос бронирований для всех вещей текущего пользователя. User ID {}, state {}.", userId, stateText);
         return new ResponseEntity<>(bookingService.findAllByOwnerIdAndState(userId, stateText), HttpStatus.OK);
@@ -47,8 +47,8 @@ public class BookingController {
     @JsonView(Details.class)
     @GetMapping(value = "/{bookingId}")
     public ResponseEntity<BookingDto> findById(
-            @RequestHeader("X-Sharer-User-Id") @Min(0) Long userId,
-            @PathVariable @Min(0) Long bookingId) {
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+            @PathVariable @Positive Long bookingId) {
         log.info("Запрос получения данных о бронировании. User ID {}, booking ID {}.", userId, bookingId);
         return new ResponseEntity<>(bookingService.findById(userId, bookingId), HttpStatus.OK);
     }
@@ -56,7 +56,7 @@ public class BookingController {
     @JsonView(Details.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BookingDto> save(
-            @RequestHeader("X-Sharer-User-Id") @Min(0) Long userId,
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
             @Validated(Create.class) @RequestBody BookingDto bookingDto) {
         log.info("Запрос на добавление бронирования. User ID {}.", userId);
         return new ResponseEntity<>(bookingService.save(userId, bookingDto), HttpStatus.OK);
@@ -65,8 +65,8 @@ public class BookingController {
     @JsonView(Details.class)
     @PatchMapping(value = "/{bookingId}")
     public ResponseEntity<BookingDto> updateState(
-            @RequestHeader("X-Sharer-User-Id") @Min(0) Long userId,
-            @PathVariable @Min(0) Long bookingId,
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+            @PathVariable @Positive Long bookingId,
             @RequestParam @NotNull Boolean approved) {
         log.info("Запрос на подтверждение или отклонение бронирования. User ID {}, booking ID {}.", userId, bookingId);
         return new ResponseEntity<>(bookingService.updateState(userId, bookingId, approved), HttpStatus.OK);
@@ -74,7 +74,7 @@ public class BookingController {
 
     @JsonView(Details.class)
     @DeleteMapping("/{bookingId}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable @Min(0) Long bookingId) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable @Positive Long bookingId) {
         log.info("Зпрос на Удаление бронирования. booking ID {}.", bookingId);
         bookingService.delete(bookingId);
         return new ResponseEntity<>(HttpStatus.OK);
