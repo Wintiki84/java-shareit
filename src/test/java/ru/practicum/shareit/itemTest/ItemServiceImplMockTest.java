@@ -241,6 +241,36 @@ class ItemServiceImplMockTest {
         Assertions.assertEquals(itemDto.getRequestId(), foundItem.getRequestId());
     }
 
+    @Test
+    void updateTestException() {
+        User user = new User(1L, "test", "test@mail.com");
+        User user1 = new User(2L, "test1", "test1@mail.com");
+
+        Item item = buildItem();
+        item.setId(1L);
+        item.setOwner(user);
+
+        Item itemUpdate = item;
+        itemUpdate.setName("testNameUpdate");
+
+        ItemDto itemDto = buildItemDto();
+
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user1));
+
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(item));
+
+        Mockito.when(itemRepository.save(Mockito.any(Item.class)))
+                .thenReturn(itemUpdate);
+
+        Exception exception = Assertions.assertThrows(NotFoundException.class,
+                () -> itemService.update(user1.getId(), item.getId(), itemDto));
+
+        Assertions.assertEquals("предмет с идентификатором: 2 не принадлежит пользователю с идентификатором: 1",
+                exception.getMessage());
+    }
+
     private ItemDto buildItemDto() {
         return ItemDto.builder()
                 .name("test")

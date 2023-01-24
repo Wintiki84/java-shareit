@@ -18,7 +18,7 @@ public class BookingDtoTest {
 
     @Test
     void bookingDtoTest() throws Exception {
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.now().withNano(0);
         BookingDto bookingDto = BookingDto.builder()
                 .id(1L)
                 .start(dateTime.plusDays(1))

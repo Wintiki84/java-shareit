@@ -111,6 +111,14 @@ public class ItemControllerTest {
     }
 
     @Test
+    void getTestAllUserItems() {
+        userController.save(userDto);
+        itemController.save(1L, itemDto);
+        itemController.save(1L, itemDto);
+        assertEquals(2, itemController.getAllUserItems(1L).getBody().size());
+    }
+
+    @Test
     void saveTestWithWrongUserId() {
         assertThrows(NotFoundException.class, () -> itemController.save(1L, itemDto));
     }
