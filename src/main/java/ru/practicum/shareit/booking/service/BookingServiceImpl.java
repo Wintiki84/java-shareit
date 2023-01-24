@@ -36,8 +36,8 @@ public class BookingServiceImpl implements BookingService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText, @NotNull Integer from
-            , @NotNull Integer size) {
+    public List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText, @NotNull Integer from,
+                                           @NotNull Integer size) {
 
         findByUserId(userId);
         Pageable pageable = createPageRequest(from, size);
