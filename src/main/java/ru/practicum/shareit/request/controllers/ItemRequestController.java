@@ -24,12 +24,13 @@ import java.util.List;
 @RequestMapping(path = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemRequestController {
 
+    private static final String HEADER = "X-Sharer-User-Id";
     private final ItemRequestService itemRequestService;
 
     @JsonView(Details.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemRequestDto> save(
-            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+            @RequestHeader(HEADER) @Positive Long userId,
             @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Запрос сохранения Request. User ID {}", userId);
         return new ResponseEntity<>(itemRequestService.save(userId, itemRequestDto), HttpStatus.OK);
@@ -38,12 +39,12 @@ public class ItemRequestController {
     @JsonView(Details.class)
     @GetMapping("/all")
     public ResponseEntity<List<ItemRequestDto>> findAll(
-            @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+            @RequestHeader(HEADER) @Positive Long userId,
             @RequestParam(value = "from", defaultValue = "0")
             @PositiveOrZero int from,
             @RequestParam(value = "size", defaultValue = "10")
             @Positive int size) {
-        log.info("ItemRequestController: findAll implementation. User ID {}.", userId);
+        log.info("Запрос на поиск всех запросов от User ID {}.", userId);
         return new ResponseEntity<>(itemRequestService.findAll(userId, from, size), HttpStatus.OK);
     }
 
@@ -51,17 +52,16 @@ public class ItemRequestController {
     @GetMapping
     public ResponseEntity<List<ItemRequestDto>> findAllByUserId(@RequestHeader("X-Sharer-User-Id")
                                                                 @Positive Long userId) {
-        log.info("ItemRequestController: findAllByUserId implementation. User ID {}.", userId);
+        log.info("Запрос на посиск всез запросво пользователя User ID {}.", userId);
         return new ResponseEntity<>(itemRequestService.findAllByUserId(userId), HttpStatus.OK);
     }
 
     @JsonView(Details.class)
     @GetMapping("/{requestId}")
     public ResponseEntity<ItemRequestDto> findById(
-            @RequestHeader("X-Sharer-User-Id")
-            @Positive Long userId,
+            @RequestHeader(HEADER) @Positive Long userId,
             @PathVariable @PositiveOrZero Long requestId) {
-        log.info("ItemRequestController: findById implementation. User ID {}, request ID {}.", userId, requestId);
+        log.info("Запрос на поиск запроса request ID {} от User ID {}", requestId, userId);
         return new ResponseEntity<>(itemRequestService.findById(userId, requestId), HttpStatus.OK);
     }
 }
