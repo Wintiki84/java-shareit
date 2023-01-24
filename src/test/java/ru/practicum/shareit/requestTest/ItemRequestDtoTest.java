@@ -18,7 +18,7 @@ public class ItemRequestDtoTest {
 
     @Test
     void itemRequestDtoTest() throws Exception {
-        LocalDateTime dateTime = LocalDateTime.now().plusHours(1);
+        LocalDateTime dateTime = LocalDateTime.now().withNano(0).plusHours(1);
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("testDescription")
