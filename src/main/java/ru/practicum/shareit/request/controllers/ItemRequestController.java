@@ -17,7 +17,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-import static ru.practicum.shareit.сonstants.Constants.Controllers.HEADER;
+import static ru.practicum.shareit.constants.Constants.HEADER;
 
 @Slf4j
 @Validated

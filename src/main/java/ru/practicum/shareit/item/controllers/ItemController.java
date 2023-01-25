@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
-import static ru.practicum.shareit.сonstants.Constants.Controllers.HEADER;
+import static ru.practicum.shareit.constants.Constants.HEADER;
 
 @Slf4j
 @RequiredArgsConstructor
