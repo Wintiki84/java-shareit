@@ -2,17 +2,22 @@ package ru.practicum.shareit.user.service;
 
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface UserService {
 
+    @NotNull
     List<UserDto> getAllUsers();
 
-    UserDto getById(long id);
+    @NotNull
+    UserDto getById(@NotNull Long id);
 
-    UserDto save(UserDto userDto);
+    @NotNull
+    UserDto save(@NotNull UserDto userDto);
 
-    UserDto update(long id, UserDto userDto);
+    @NotNull
+    UserDto update(@NotNull Long id, @NotNull UserDto userDto);
 
-    void delete(long id);
+    void delete(@NotNull Long id);
 }

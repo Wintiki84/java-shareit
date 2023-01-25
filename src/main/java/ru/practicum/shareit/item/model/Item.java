@@ -1,25 +1,38 @@
 package ru.practicum.shareit.item.model;
 
-import jdk.jfr.BooleanFlag;
 import lombok.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
+import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @Setter
+@Entity
+@Table(name = "items", schema = "public")
 public class Item {
-    @EqualsAndHashCode.Exclude
-    private long id;
-    @NotBlank
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private Long id;
+
+    @Column(name = "name", nullable = false)
     private String name;
-    @NotBlank
+
+    @Column(name = "description", length = 512, nullable = false)
     private String description;
-    @BooleanFlag
-    @NotBlank
+
+    @Column(name = "available", nullable = false)
     private Boolean available;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 }
