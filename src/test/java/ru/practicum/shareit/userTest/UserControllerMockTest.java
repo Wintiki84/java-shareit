@@ -20,7 +20,7 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.practicum.shareit.constants.Constants.Controllers.HEADER;
+import static ru.practicum.shareit.constants.Constants.HEADER;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc

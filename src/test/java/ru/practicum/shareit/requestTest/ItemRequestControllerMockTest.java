@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.practicum.shareit.constants.Constants.Controllers.HEADER;
+import static ru.practicum.shareit.constants.Constants.HEADER;
 
 @WebMvcTest(ItemRequestController.class)
 @AutoConfigureMockMvc
