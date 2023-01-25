@@ -2,6 +2,7 @@ package ru.practicum.shareit.bookingTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,11 +27,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.сonstants.Constants.Controllers.HEADER;
 
 @WebMvcTest(controllers = BookingController.class)
 @AutoConfigureMockMvc
 public class BookingControllerMockTest {
-    private static final String HEADER = "X-Sharer-User-Id";
     @Autowired
     private ObjectMapper mapper;
 
@@ -74,6 +75,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for save method")
     void saveTest() throws Exception {
         bookingDto.setId(null);
         bookingDto.setItemId(1L);
@@ -92,6 +94,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for save method")
     void saveTestBookingStartAfterEnd() throws Exception {
         bookingDto.setStart(LocalDateTime.now().plusDays(5));
         bookingDto.setEnd(LocalDateTime.now().plusDays(2));
@@ -103,6 +106,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for updateState method")
     void updateStatusTest() throws Exception {
         bookingDto.setStatus(Status.APPROVED);
         when(bookingService.updateState(anyLong(), anyLong(), anyBoolean()))
@@ -117,6 +121,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for findAllByOwnerIdAndState method")
     void findAllByOwnerIdAndStatusTest() throws Exception {
         when(bookingService.findAllByOwnerIdAndState(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
@@ -130,6 +135,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for findAllByState method")
     void findAllByUserTest() throws Exception {
         when(bookingService.findAllByState(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
@@ -143,6 +149,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for findAllByOwnerIdAndState method")
     void findAllByUserTestWithWrongStatus() throws Exception {
         when(bookingService.findAllByOwnerIdAndState(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenThrow(BookingException.class);
@@ -155,6 +162,7 @@ public class BookingControllerMockTest {
     }
 
     @Test
+    @DisplayName(" test for findById method")
     void findByIdTest() throws Exception {
         when(bookingService.findById(anyLong(), anyLong()))
                 .thenReturn(bookingDto);

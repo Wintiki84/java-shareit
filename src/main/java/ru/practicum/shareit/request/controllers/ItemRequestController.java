@@ -17,6 +17,8 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+import static ru.practicum.shareit.сonstants.Constants.Controllers.HEADER;
+
 @Slf4j
 @Validated
 @RequiredArgsConstructor
@@ -24,7 +26,6 @@ import java.util.List;
 @RequestMapping(path = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemRequestController {
 
-    private static final String HEADER = "X-Sharer-User-Id";
     private final ItemRequestService itemRequestService;
 
     @JsonView(Details.class)

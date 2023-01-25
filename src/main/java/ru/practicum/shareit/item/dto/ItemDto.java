@@ -28,12 +28,10 @@ public class ItemDto {
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})
-    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
     @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     private String name;
 
     @JsonView({Details.class, AdminDetails.class})
-    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
     @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     private String description;
 

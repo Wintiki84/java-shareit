@@ -10,7 +10,6 @@ import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
@@ -27,7 +26,6 @@ public class CommentDto {
 
     @JsonView({Details.class, AdminDetails.class})
     @NotBlank(groups = {Create.class, Update.class}, message = "Не должно быть пустым")
-    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
     private String text;
 
     @JsonView({Details.class, AdminDetails.class})

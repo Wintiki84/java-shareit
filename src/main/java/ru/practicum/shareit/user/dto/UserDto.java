@@ -9,7 +9,10 @@ import ru.practicum.shareit.validator.Create;
 import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
 
 @Builder
 @Getter
@@ -22,12 +25,10 @@ public class UserDto {
     private Long id;
 
     @JsonView({Details.class, AdminDetails.class})
-    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
     @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     private String name;
 
     @JsonView({Details.class, AdminDetails.class})
-    @NotNull(groups = {Create.class}, message = "Не должно быть пустым")
     @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     @Email(groups = {Create.class, Update.class}, message = "Неверный формат Email")
     private String email;
