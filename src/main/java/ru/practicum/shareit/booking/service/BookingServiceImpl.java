@@ -2,7 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -35,66 +36,63 @@ public class BookingServiceImpl implements BookingService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText) {
-        if (Status.from(stateText) == null) {
-            log.info("BookingServiceImpl.findAllByState: Неизвестное состояние" + stateText);
-            //С сообщением об ошибке на русском не проходит тесты
-            throw new IllegalArgumentException("Unknown state: " + stateText);
-        }
-        findByUserId(userId);
+    public List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText, @NotNull Integer from,
+                                           @NotNull Integer size) {
 
-        switch (Status.valueOf(stateText)) {
+        findByUserId(userId);
+        Pageable pageable = createPageRequest(from, size);
+
+        switch (checkStatus(stateText)) {
             case CURRENT:
                 return bookingRepository
-                        .findByBookerIdAndEndIsAfterAndStartIsBefore(
+                        .findByBookerIdAndCurrentOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
                 return bookingRepository
-                        .findByBookerIdAndEndIsBefore(
+                        .findByBookerIdAndEndIsBeforeOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
                 return bookingRepository
-                        .findByBookerIdAndStartIsAfter(
+                        .findByBookerIdAndStartIsAfterOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
                 return bookingRepository
-                        .findByBookerIdAndStatus(
+                        .findByBookerIdAndStatusOrderByStartDesc(
                                 userId,
                                 Status.WAITING,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case REJECTED:
                 return bookingRepository
-                        .findByBookerIdAndStatus(
+                        .findByBookerIdAndStatusOrderByStartDesc(
                                 userId,
                                 Status.REJECTED,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
                 return bookingRepository
-                        .findByBookerId(
+                        .findByBookerIdOrderByStartDesc(
                                 userId,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -104,16 +102,15 @@ public class BookingServiceImpl implements BookingService {
     @NotNull
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String stateText) {
-        if (Status.from(stateText) == null) {
-            log.info("BookingServiceImpl.findAllByOwnerIdAndState: Неизвестное состояние" + stateText);
-            //С сообщением об ошибке на русском не проходит тесты
-            throw new IllegalArgumentException("Unknown state: " + stateText);
-        }
+    public List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String stateText,
+                                                     @NotNull Integer from, @NotNull Integer size) {
+
         findByUserId(userId);
-        List<BookingDto> bookings = bookingRepository.findByItemOwnerId(
+        Pageable pageable = createPageRequest(from, size);
+
+        List<BookingDto> bookings = bookingRepository.findByItemOwnerIdOrderByStartDesc(
                         userId,
-                        Sort.by(Sort.Direction.DESC, "start"))
+                        pageable)
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
@@ -122,50 +119,49 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException(String.format("Бронирований для пользователя ID %s не найдено", userId));
         }
 
-        switch (Status.valueOf(stateText)) {
+        switch (checkStatus(stateText)) {
             case CURRENT:
                 return bookingRepository
-                        .findByItemOwnerIdAndEndIsAfterAndStartIsBefore(
+                        .findByItemOwnerIdAndCurrentOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
                 return bookingRepository
-                        .findByItemOwnerIdAndEndIsBefore(
+                        .findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
                 return bookingRepository
-                        .findByItemOwnerIdAndStartIsAfter(
+                        .findByItemOwnerIdAndStartIsAfterOrderByStartDesc(
                                 userId,
                                 LocalDateTime.now(),
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
                 return bookingRepository
-                        .findByItemOwnerIdAndStatus(
+                        .findByItemOwnerIdAndStatusOrderByStartDesc(
                                 userId,
                                 Status.WAITING,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case REJECTED:
                 return bookingRepository
-                        .findByItemOwnerIdAndStatus(
+                        .findByItemOwnerIdAndStatusOrderByStartDesc(
                                 userId,
                                 Status.REJECTED,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -192,7 +188,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto save(@NotNull Long userId, @NotNull BookingDto bookingDto) throws MissingResourceException {
         if (!bookingDto.getEnd().isAfter(bookingDto.getStart())) {
             throw new BookingException("BookingService.save: Некорректное время бронирования: окончание бронирования " +
-                    bookingDto.getEnd().toString() + " позже начала " + bookingDto.getStart().toString());
+                    bookingDto.getEnd() + " позже начала " + bookingDto.getStart().toString());
         }
 
         Booking booking = BookingMapper.toBooking(bookingDto);
@@ -257,5 +253,18 @@ public class BookingServiceImpl implements BookingService {
     private Item findByItemId(@NotNull Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Предмет ID %s не найден", itemId)));
+    }
+
+    private PageRequest createPageRequest(Integer from, Integer size) {
+        return PageRequest.of(from / size, size);
+    }
+
+    private Status checkStatus(String stateText) {
+        if (Status.from(stateText) == null) {
+            log.info("BookingServiceImpl.findAllByOwnerIdAndState: Неизвестное состояние" + stateText);
+            //С сообщением об ошибке на русском не проходит тесты
+            throw new IllegalArgumentException("Unknown state: " + stateText);
+        }
+        return Status.valueOf(stateText);
     }
 }

@@ -9,10 +9,12 @@ import java.util.MissingResourceException;
 public interface BookingService {
 
     @NotNull
-    List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String stateText);
+    List<BookingDto> findAllByState(@NotNull Long userId, @NotNull String status, @NotNull Integer from,
+                                    @NotNull Integer size);
 
     @NotNull
-    List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String stateText);
+    List<BookingDto> findAllByOwnerIdAndState(@NotNull Long userId, @NotNull String status, @NotNull Integer from,
+                                              @NotNull Integer size);
 
     @NotNull
     BookingDto findById(@NotNull Long userId, @NotNull Long bookingId);
