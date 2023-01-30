@@ -50,7 +50,6 @@ public class ItemServiceImpl implements ItemService {
         User user = findByUserId(userId);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
-        Object itemDtoRequest;
         ItemRequest itemRequest = itemDto.getRequestId() == null ? null : itemRequestRepository
                 .findById(itemDto.getRequestId())
                 .orElseThrow(() -> new NotFoundException("ItemRequest не найден"));
@@ -112,7 +111,6 @@ public class ItemServiceImpl implements ItemService {
                 })
                 .collect(toList());
 
-        log.info("ItemService: findAllByOwnerId implementation. User ID {}.", ownerId);
         return itemsDtoWithBookingList;
     }
 
@@ -166,14 +164,12 @@ public class ItemServiceImpl implements ItemService {
                 nextBooking.getId(),
                 nextBooking.getBooker().getId()));
 
-        log.info("ItemService: findById implementation. User ID {}, item ID {}.", userId, itemId);
         return itemDto;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> findAllByText(String text, int from, int size) {
-        log.info("ItemService: findAllByText implementation. Text: {}.", text);
         return itemRepository.search(text, PageRequest.of(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
@@ -192,7 +188,8 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .noneMatch(booking -> booking.getStatus().equals(Status.APPROVED));
         if (bookingBoolean) {
-            throw new BookingException(String.format("User ID %s hasn't book item ID %s.", userId, itemId));
+            throw new BookingException(String.format("Идентификатор пользователя %s не имеет идентификатора элемента " +
+                    "бронирования %s.", userId, itemId));
         }
 
         Comment comment = CommentMapper.toComment(commentDto);
@@ -200,7 +197,6 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());
         Comment commentSave = commentRepository.save(comment);
-        log.info("CommentService: save implementation. User ID {}, itemId {}.", userId, itemId);
         return CommentMapper.toCommentDto(commentSave);
     }
 

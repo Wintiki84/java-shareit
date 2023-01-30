@@ -1,11 +1,15 @@
 package ru.practicum.shareit.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareit.validator.AdminDetails;
 import ru.practicum.shareit.validator.Create;
+import ru.practicum.shareit.validator.Details;
 import ru.practicum.shareit.validator.Update;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
@@ -15,10 +19,12 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UserRequestDto {
 
-    @NotBlank(groups = {Create.class})
+    @JsonView({Details.class, AdminDetails.class})
+    @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
     private String name;
 
-    @NotBlank(groups = {Create.class})
-    @Email(groups = {Create.class, Update.class})
+    @JsonView({Details.class, AdminDetails.class})
+    @NotBlank(groups = {Create.class}, message = "Не должно быть пустым")
+    @Email(groups = {Create.class, Update.class}, message = "Неверный формат Email")
     private String email;
 }

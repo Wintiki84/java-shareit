@@ -1,5 +1,3 @@
-
-
 package ru.practicum.shareit.validator;
 
 import javax.validation.Constraint;
@@ -16,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = CheckDateValidator.class)
 public @interface StartBeforeEndDateValid {
-    String message() default "Start must be before end or not null.";
+    String message() default "Начало должно быть перед окончанием или не быть нулевым.";
 
     Class<?>[] groups() default {};
 

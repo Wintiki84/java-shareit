@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.request.dto.ItemRequestRequestDto;
+
 import java.util.Map;
 
 @Service
@@ -38,6 +39,7 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItemRequest(Long requestId, long userId) {
-        return get("/" + requestId, userId);
+        return get("/" + requestId,
+                userId);
     }
 }
