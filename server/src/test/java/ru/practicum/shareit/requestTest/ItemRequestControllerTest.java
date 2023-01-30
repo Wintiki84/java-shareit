@@ -11,8 +11,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.controllers.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.ConstraintViolationException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

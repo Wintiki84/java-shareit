@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.controllers.BookingController;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.controllers.ItemController;
@@ -16,10 +15,6 @@ import ru.practicum.shareit.request.controllers.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.controllers.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

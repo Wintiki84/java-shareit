@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.controllers.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -210,13 +209,13 @@ public class BookingControllerTest {
                 .findAllByOwnerIdAndState(1L, "ALL", 0, 10));
     }
 
-   // @Test
-   // void findAllTestsWithWrongForm() {
-   //     assertThrows(ConstraintViolationException.class, () -> bookingController
-   //             .findAllByState(1L, "ALL", -1, 10));
-   //     assertThrows(ConstraintViolationException.class, () -> bookingController
-   //             .findAllByOwnerIdAndState(1L, "ALL", -1, 10));
-   // }
+    // @Test
+    // void findAllTestsWithWrongForm() {
+    //     assertThrows(ConstraintViolationException.class, () -> bookingController
+    //             .findAllByState(1L, "ALL", -1, 10));
+    //     assertThrows(ConstraintViolationException.class, () -> bookingController
+    //             .findAllByOwnerIdAndState(1L, "ALL", -1, 10));
+    // }
 
     @Test
     void findByIdTestWithWrongId() {
