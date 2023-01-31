@@ -40,7 +40,7 @@ public class ItemRequestController {
     @JsonView(Details.class)
     @GetMapping
     public ResponseEntity<Object> getItemRequestsByUser(@RequestHeader(HEADER) @Positive Long userId) {
-        log.info("Запрос на посиск всез запросво пользователя User ID {}.", userId);
+        log.info("Запрос на поиск всех запросов пользователя User ID {}.", userId);
         return itemRequestClient.getItemRequestsByUser(userId);
     }
 
